@@ -15,7 +15,7 @@ void get_ip_address(int socket_fd, struct ifreq *ifr) {
 	// socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
 
 	ifr->ifr_addr.sa_family = AF_INET;
-	snprintf(ifr->ifr_name, IFNAMSIZ, "enp0s8");
+	snprintf(ifr->ifr_name, IFNAMSIZ, "wlo1");
 	ioctl(socket_fd, SIOCGIFADDR, ifr);
 
 	/* and more importantly */
@@ -75,14 +75,16 @@ int main() {
 		struct sockaddr_in m_addr;
 		socklen_t len = sizeof m_addr;
 		getpeername(newSocket, (struct sockaddr*)&m_addr, &len);
+		strcpy(buffer, "Client IP addr: ");
+		strcat(buffer, inet_ntoa(m_addr.sin_addr));
 		printf("Client IP addr: %s\n", inet_ntoa(m_addr.sin_addr));
 		printf("Client Port is: %d\n", ntohs(m_addr.sin_port));
 
 		/*---- Send message to the socket of the incoming connection ----*/
 		struct ifreq ifr;
 		get_ip_address(newSocket, &ifr);
-		strcpy(buffer, inet_ntoa(m_addr.sin_addr));
-		send(newSocket, buffer, 20, 0);
+		// strcpy(buffer, inet_ntoa(m_addr.sin_addr));
+		send(newSocket, buffer, 64, 0);
 	}
 
 	return 0;
