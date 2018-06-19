@@ -1,4 +1,4 @@
-## Client - Server code, with some focus on socket CAN implementation.
+## Client - Server code, with some focus on socketCAN implementation.
   The code itself is enhanced, just to pass information between Client and Server
   in the sense that this is the check-in of the Berkley implementation from the
   Y1980s.
