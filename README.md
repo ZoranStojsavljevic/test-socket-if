@@ -1,7 +1,7 @@
 ## Client - Server code, with some focus on socket CAN implementation.
   The code itself is enhanced, just to pass information between Client and Server
   in the sense that this is the check-in of the Berkley implementation from the
-  Year 1980's.
+  Y1980s.
   
   There is one catch 22 in the Server code:
     In the function: void get_ip_address(int socket_fd, struct ifreq *ifr):
