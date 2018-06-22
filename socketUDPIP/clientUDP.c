@@ -24,6 +24,7 @@ int main(void)
     char buf[BUFLEN];
     char message[BUFLEN];
 
+    // create a UDP socket: IPPROTO_UDP (UDP in this case)
     if ( (s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
         die("socket");
     }
@@ -41,15 +42,15 @@ int main(void)
 	printf("Enter message : ");
 	gets(message);
 
-	//send the message
+	// send the message
 	if (sendto(s, message, strlen(message) , 0 , (struct sockaddr *) &si_other, slen)==-1) {
 	    die("sendto()");
 	}
 
-	//receive a reply and print it
-	//clear the buffer by filling null, it might have previously received data
+	// receive a reply and print it
+	// clear the buffer by filling null, it might have previously received data
 	memset(buf,'\0', BUFLEN);
-	//try to receive some data, this is a blocking call
+	// try to receive some data, this is a blocking call
 	if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen) == -1) {
 	    die("recvfrom()");
 	}
