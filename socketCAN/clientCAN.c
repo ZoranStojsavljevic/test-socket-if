@@ -1,7 +1,6 @@
 // SocketCAN - The official CAN API of the Linux kernel
 // https://www.can-cia.org/fileadmin/resources/documents/proceedings/2012_kleine-budde.pdf
 
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -30,25 +29,16 @@ int main(int argc, char **argv) {
   addr.can_family = PF_CAN;
   /* bind socket to the can0 interface */
   bind(s, (struct sockaddr *)&addr, sizeof(addr));
-
-  // default the receiving frame to zeros
-  memset(&frame, 0x0, sizeof(frame));
-
-  /* first receive, then print the CAN frame */
-  read(s, &frame, sizeof(frame));
-  printf ("frame CAN   id is %x\n", frame.can_id);
-  printf ("frame CAN data is %s\n", frame.data);
-  printf ("frame CAN  dcl is %x\n", frame.can_dlc);
-
-  // default the receiving frame to zeros
-  memset(&frame, 0x0, sizeof(frame));
-
-  /* first receive, then print the CAN frame */
-  read(s, &frame, sizeof(frame));
-  printf ("frame CAN   id is %x\n", frame.can_id);
-  printf ("frame CAN data is %s\n", frame.data);
-  printf ("frame CAN  dcl is %x\n", frame.can_dlc);
-
+  /* first fill, then send the CAN frame */
+  frame.can_id = 0x23;
+  strcpy((char *)frame.data, "hello");
+  frame.can_dlc = 5;
+  write(s, &frame, sizeof(frame));
+  /* first fill, then send the CAN frame */
+  frame.can_id = 0x23;
+  strcpy((char *)frame.data, "iCC2012");
+  frame.can_dlc = 7;
+  write(s, &frame, sizeof(frame));
   close(s);
   return 0;
 }
