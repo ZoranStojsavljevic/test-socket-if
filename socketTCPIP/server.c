@@ -47,7 +47,7 @@ int main() {
     /*---- Configure settings of the server address struct ----*/
     /* Address family = Internet */
     serverAddr.sin_family = AF_INET;
-    
+
     /* Set port number, using htons function to use proper byte order */
     serverAddr.sin_port = htons(7891);
     /* Set IP address to all data link interfaces */
@@ -57,37 +57,41 @@ int main() {
     /* Set all bits of the padding field to 0 */
     memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
 
-    /*---- Bind the address struct to the socket ----*/
-    bind(welcomeSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
-
-    int port = (int) ntohs(serverAddr.sin_port);
-    printf("Port is: %d\n", (int) ntohs(serverAddr.sin_port));
-
-    /*---- Listen on the socket, with 5 max connection requests queued ----*/
-    if(listen(welcomeSocket, 5)==0) printf("Listening\n");
-    else printf("Error\n");
-
-    /*---- Accept call creates a new socket for the incoming connection ----*/
-    addr_size = sizeof serverStorage;
-    newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size);
     int read_size;
-    while (1) {
-	if ((read_size = recv(newSocket, buffer, 64, 0)) > 0 ) {
-	    /*---- Print the received message ----*/
-	    printf("Data received from client: %s\n", buffer);
-	    /* Send message back to client/to the socket of the incoming connection */
-	    /*---- Get the Client IP address ----*/
-	    struct sockaddr_in m_addr;
-	    socklen_t len = sizeof m_addr;
-	    getpeername(newSocket, (struct sockaddr*)&m_addr, &len);
-	    strcpy(buffer, "Client IP addr: ");
-	    strcat(buffer, inet_ntoa(m_addr.sin_addr));
-	    printf("Client IP addr: %s\n", inet_ntoa(m_addr.sin_addr));
-	    printf("Client Port is: %d\n", ntohs(m_addr.sin_port));
-	    struct ifreq ifr;
-	    get_ip_address(newSocket, &ifr);
-	    // strcpy(buffer, inet_ntoa(m_addr.sin_addr));
-	    send(newSocket, buffer, 64, 0);
+    while(1) {
+	/*---- Bind the address struct to the socket ----*/
+	bind(welcomeSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+
+	int port = (int) ntohs(serverAddr.sin_port);
+	printf("Port is: %d\n", (int) ntohs(serverAddr.sin_port));
+
+	/*---- Listen on the socket, with 5 max connection requests queued ----*/
+	if(listen(welcomeSocket, 5)==0) printf("Listening\n");
+	else printf("Error\n");
+
+	/*---- Accept call creates a new socket for the incoming connection ----*/
+	addr_size = sizeof serverStorage;
+	newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size);
+	memset(&buffer[0], 0, sizeof(buffer));
+	while(1) {
+	    if ((read_size = recv(newSocket, buffer, 64, 0)) > 0 ) {
+		if ('x' == buffer[0]) break;
+		/*---- Print the received message ----*/
+		printf("Data received from client: %s\n", buffer);
+		/* Send message back to client/to the socket of the incoming connection */
+		/*---- Get the Client IP address ----*/
+		struct sockaddr_in m_addr;
+		socklen_t len = sizeof m_addr;
+		getpeername(newSocket, (struct sockaddr*)&m_addr, &len);
+		strcpy(buffer, "Client IP addr: ");
+		strcat(buffer, inet_ntoa(m_addr.sin_addr));
+		printf("Client IP addr: %s\n", inet_ntoa(m_addr.sin_addr));
+		printf("Client Port is: %d\n", ntohs(m_addr.sin_port));
+		struct ifreq ifr;
+		get_ip_address(newSocket, &ifr);
+		// strcpy(buffer, inet_ntoa(m_addr.sin_addr));
+		send(newSocket, buffer, 64, 0);
+	    }
 	}
     }
 

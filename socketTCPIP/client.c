@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -52,8 +53,13 @@ int main(){
 
     // Keep communicating with server
     while(i < 7) {
+      char asc_i[8];
 	// Prepare some data
-	strcpy(buffer, "Server IP addr: ");
+	// itoa(i, buffer, 10);
+	sprintf(asc_i, "%d", i);
+	strcpy(buffer, " Server IP addr: [");
+	strcat(buffer, asc_i);
+	strcat(buffer, "] ");
 	strcat(buffer, inet_ntoa(serverAddr.sin_addr));
 	printf("Server IP addr: %s\n", inet_ntoa(serverAddr.sin_addr));
 	printf("Server Port is: %d\n", ntohs(serverAddr.sin_port));
@@ -72,6 +78,13 @@ int main(){
 	/*---- Print the received message ----*/
 	printf("Data received: %s\n", buffer);
 	i++;
+    }
+
+    strcpy(buffer, "x");
+
+    if (send(clientSocket, buffer, strlen(buffer), 0) < 0) {
+	printf("Client send() failed");
+	return 1;
     }
 
     close(clientSocket);
