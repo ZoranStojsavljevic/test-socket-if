@@ -105,9 +105,10 @@ int main(int argc, char **argv)
 	char* server_string;
 
 	/* set default config settings */
+	puts("Starting socketcandcl(ient)\n");
 	port = PORT;
-	strcpy(ldev, "can0");
-	strcpy(rdev,"can0");
+	strcpy(ldev, "vcan0");
+	strcpy(rdev,"vcan0");
 	server_string = malloc(strlen("localhost"));
 
 	/* Parse commandline arguments */
@@ -126,7 +127,6 @@ int main(int argc, char **argv)
 		c = getopt_long(argc, argv, "vhi:p:l:s:", long_options, &option_index);
 
 		if(c == -1) break;
-		puts("Processing the argument\n");
 
 		switch(c) {
 		case 0:
@@ -135,27 +135,28 @@ int main(int argc, char **argv)
 			break;
 
 		case 'v':
-			puts("Verbose output activated\n");
+			printf("Verbose output activated\n");
 			verbose_flag = 1;
 			break;
 
 		case 'p':
 			port = atoi(optarg);
-			puts("The port selected\n");
-			printf("the port selected is %d\n", port);
+			printf("The port selected is %d\n", port);
 			break;
 
 		case 's':
-			puts("Server selected\n");
-			printf("Server selected is %s\n", optarg);
-			server_string = realloc(server_string,strlen(optarg));
+			printf("Server selected [optarg] is %s\n", optarg);
+			server_string = realloc(server_string, strlen(optarg));
 			strcpy(server_string, optarg);
+			printf("Server selected [server_string] is %s\n", server_string);
 			break;
 
 		case 'i':
-			printf("Interface selected is %s\n", optarg);
+			printf("Interface selected [optarg] is %s\n", optarg);
 			strcpy(rdev, strtok(optarg, ","));
-			strcpy(ldev, strtok(NULL, ","));
+			// strcpy(ldev, strtok(NULL, ",")); /* <<==== segmentation fault */
+			printf("Interface selected [ldev] is %s\n", ldev);
+			printf("Interface selected [rdev] is %s\n", rdev);
 			break;
 
 		case 'h':
@@ -174,7 +175,7 @@ int main(int argc, char **argv)
 			print_usage();
 			return -1;
 		}
-		puts("Command argument processed!\n");
+		printf("Command argument processed %s!\n", optarg);
 	}
 
 	sigint_action.sa_handler = &sigint;
