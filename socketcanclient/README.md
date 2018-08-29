@@ -1,4 +1,4 @@
-### socketcancl setup
+#### Common socketcandcl (client) & socketcand (server) setup
 
 To set socketCAN-Fd framework beneath Linux kernel, please, do as root:
 ```
@@ -18,7 +18,29 @@ To set the socketCAN-Fd framework, the following should be done (also as root):
   ip link set dev vcan0 up
   ifconfig
 ```
-To make socketcandcl (socketcand client), the following is required:
+#### To make socketcand (server), the following is required:
+```
+$ cat /etc/socketcand.conf 
+  # The network interface the socketcand will bind to
+  # listen = "eth0";
+
+  # The port the socketcand is listening on
+  port = 28601;
+
+  # List of busses the daemon shall provide access to
+  # Multiple busses must be separated with ',' and whitespace
+  # is not allowed. eg "vcan0,vcan1"
+  busses = "vcan0";
+
+  # Description of the service. This will show up in the discovery beacon
+  description = "socketcand";
+```
+And, after:
+```
+$ socketcand -v -i vcan0 -p 28601 -l eth1&
+$ nc 192.168.1.4 28601
+```
+#### To make socketcandcl (socketcand client), the following is required:
 ```
   $ gcc socketcandcl.c -o socketcandcl
   $ ./socketcandcl -v -i vcan0 -p 28601 -s stretch
