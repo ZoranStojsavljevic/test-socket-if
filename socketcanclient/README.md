@@ -1,3 +1,24 @@
+### socketcancl setup
+
+To set socketCAN-Fd framework beneath Linux kernel, please, do as root:
+```
+  lsmod | grep can
+  modprobe can
+  modprobe can_raw
+  modprobe can-bcm
+  modprobe can-dev
+  modprobe can-gw
+  modprobe vcan
+  lsmod | grep can
+```
+To set the socketCAN-Fd framework, the following should be done (also as root):
+```
+  ip link add dev vcan0 type vcan
+  ip link set vcan0 mtu 72
+  ip link set dev vcan0 up
+  ifconfig
+```
+To make socketcandcl (socketcand client), the following is required:
 ```
   $ gcc socketcandcl.c -o socketcandcl
   $ ./socketcandcl -v -i vcan0 -p 28601 -s stretch
