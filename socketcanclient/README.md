@@ -1,3 +1,7 @@
+#### Based upon dschanoeh/socketcand
+  https://github.com/dschanoeh/socketcand
+  https://github.com/dschanoeh/socketcand/blob/master/socketcandcl.c
+
 #### Common socketcandcl (client) & socketcand (server) setup
 
 To set socketCAN-Fd framework beneath Linux kernel, please, do as root:
