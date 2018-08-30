@@ -316,6 +316,7 @@ inline void state_connected()
 
 			if(FD_ISSET(server_socket, &readfds) || more_elements) {
 				ret = receive_command(server_socket, (char *) &buf);
+				printf("Received command is: %s\n", buf);
 				if(ret == 0) {
 					if(!strncmp("< frame", buf, 7)) {
 						sscanf(buf, "< frame %x %*d.%*d %s >", &frame.can_id,
@@ -346,6 +347,7 @@ inline void state_connected()
 				}
 			} else {
 				ret = read(server_socket, &buf, 0);
+				printf("Received message is: %s\n", buf);
 				if(ret == -1) {
 					state = STATE_SHUTDOWN;
 					return;
@@ -368,6 +370,7 @@ inline void state_connected()
 
 			if(FD_ISSET(raw_socket, &readfds)) {
 				ret = recv(raw_socket, &frame, sizeof(struct can_frame), MSG_WAITALL);
+				printf("Received frame is: %s\n", frame);
 				if(ret < sizeof(struct can_frame)) {
 					PRINT_ERROR("Error reading frame from RAW socket\n")
 						perror("Reading CAN socket\n");
@@ -441,6 +444,7 @@ int receive_command(int socket, char *buffer)
 	for(i=1; i<cmd_index; i++) {
 		if(cmd_buffer[i] == '>') {
 			stop = i;
+			printf("Received buffer is: %s\n", buffer);
 			break;
 		}
 	}
