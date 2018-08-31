@@ -44,6 +44,8 @@ And, after:
 ```
 $ socketcand -v -i vcan0 -p 28601 -l eth1&
 $ nc 192.168.1.4 28601
+  < hi >< open vcan0 >
+  < ok >
 ```
 #### To make socketcandcl (socketcand client), the following is required:
 ```
