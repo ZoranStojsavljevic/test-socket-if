@@ -52,6 +52,10 @@ $ nc 192.168.1.4 28601
   $ gcc socketcandcl.c -o socketcandcl
   $ ./socketcandcl -v -i vcan0 -p 28601 -s stretch
 ```
+There are two connections established:
+[1] One normal (TCP/IP) which serves to convey commands;
+[2] The second, socket CAN, to convey CAN messages between server and client.
+
 ##### Add a new frame for transmission #####
 This command adds a new frame to the BCM queue. An interval can be configured to have the frame sent cyclic.
 
