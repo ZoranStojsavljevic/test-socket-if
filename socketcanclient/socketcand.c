@@ -83,7 +83,7 @@ pthread_t beacon_thread, statistics_thread;
 char **interface_names;
 int interface_count=0;
 int port;
-int verbose_flag=0;
+int verbose_flag=1;
 int daemon_flag=0;
 int disable_beacon=0;
 int state = STATE_NO_BUS;
@@ -295,7 +295,6 @@ int main(int argc, char **argv)
 		openlog("socketcand", 0, LOG_DAEMON);
 	}
 
-
 	sigemptyset(&sigset);
 	signalaction.sa_handler = &childdied;
 	signalaction.sa_mask = sigset;
@@ -327,16 +326,16 @@ int main(int argc, char **argv)
 		PRINT_VERBOSE("creating broadcast thread...\n")
 			i = pthread_create(&beacon_thread, NULL, &beacon_loop, NULL);
 		if(i)
-			PRINT_ERROR("could not create broadcast thread.\n");
+			PRINT_ERROR("could not create broadcast thread.\n")
 	} else {
-		PRINT_VERBOSE("Discovery beacon disabled\n");
+		PRINT_VERBOSE("Discovery beacon disabled\n")
 	}
 
 	PRINT_VERBOSE("binding socket to %s:%d\n", inet_ntoa(saddr.sin_addr), ntohs(saddr.sin_port))
-		if(bind(sl,(struct sockaddr*)&saddr, sizeof(saddr)) < 0) {
-			perror("bind");
-			exit(-1);
-		}
+	if(bind(sl,(struct sockaddr*)&saddr, sizeof(saddr)) < 0) {
+		perror("bind");
+		exit(-1);
+	}
 
 	if (listen(sl,3) != 0) {
 		perror("listen");
@@ -369,8 +368,8 @@ int main(int argc, char **argv)
 	PRINT_VERBOSE("client connected\n")
 
 #ifdef DEBUG
-		PRINT_VERBOSE("setting SO_REUSEADDR\n")
-		i = 1;
+	PRINT_VERBOSE("setting SO_REUSEADDR\n")
+	i = 1;
 	if(setsockopt(client_socket, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)) <0) {
 		perror("setting SO_REUSEADDR failed");
 	}
@@ -388,7 +387,7 @@ int main(int argc, char **argv)
 			/* client has to start with a command */
 			i = receive_command(client_socket, (char *) &buf);
 			if(i != 0) {
-				PRINT_ERROR("Connection terminated while waiting for command.\n");
+				PRINT_ERROR("Connection terminated while waiting for command.\n")
 				state = STATE_SHUTDOWN;
 				break;
 			}
@@ -409,7 +408,7 @@ int main(int argc, char **argv)
 					state = STATE_BCM;
 					break;
 				} else {
-					PRINT_INFO("client tried to access unauthorized bus.\n");
+					PRINT_INFO("client tried to access unauthorized bus.\n")
 					strcpy(buf, "< error could not open bus >");
 					send(client_socket, buf, strlen(buf), 0);
 					state = STATE_SHUTDOWN;
@@ -435,7 +434,7 @@ int main(int argc, char **argv)
 			break;
 
 		case STATE_SHUTDOWN:
-			PRINT_VERBOSE("Closing client connection.\n");
+			PRINT_VERBOSE("Closing client connection.\n")
 			close(client_socket);
 			return 0;
 		}
@@ -455,12 +454,12 @@ int receive_command(int socket, char *buffer) {
 	if(!more_elements) {
 		cmd_index += read(socket, cmd_buffer+cmd_index, MAXLEN-cmd_index);
 #ifdef DEBUG_RECEPTION
-		PRINT_VERBOSE("\tRead from socket\n");
+	PRINT_VERBOSE("\tRead from socket\n")
 #endif
 	}
 
 #ifdef DEBUG_RECEPTION
-	PRINT_VERBOSE("\tcmd_index now %d\n", cmd_index);
+	PRINT_VERBOSE("\tcmd_index now %d\n", cmd_index)
 #endif
 
 	more_elements = 0;
@@ -498,13 +497,13 @@ int receive_command(int socket, char *buffer) {
 	/* if no '>' is in the string we have to wait for more data */
 	if(stop == -1) {
 #ifdef DEBUG_RECEPTION
-		PRINT_VERBOSE("\tNo full element in the buffer\n");
+		PRINT_VERBOSE("\tNo full element in the buffer\n")
 #endif
 		return -1;
 	}
 
 #ifdef DEBUG_RECEPTION
-	PRINT_VERBOSE("\tElement between %d and %d\n", start, stop);
+	PRINT_VERBOSE("\tElement between %d and %d\n", start, stop)
 #endif
 
 	/* copy string to new destination and correct cmd_buffer */
@@ -514,7 +513,7 @@ int receive_command(int socket, char *buffer) {
 	buffer[i-start] = '\0';
 
 #ifdef DEBUG_RECEPTION
-	PRINT_VERBOSE("\tElement is '%s'\n", buffer);
+	PRINT_VERBOSE("\tElement is '%s'\n", buffer)
 #endif
 
 	/* if only this message was in the buffer we're done */
@@ -534,7 +533,7 @@ int receive_command(int socket, char *buffer) {
 		if(start == -1) {
 			cmd_index = 0;
 #ifdef DEBUG_RECEPTION
-			PRINT_VERBOSE("\tGarbage after the first element in the buffer\n");
+			PRINT_VERBOSE("\tGarbage after the first element in the buffer\n")
 #endif
 			return 0;
 			/* otherwise we copy the valid data to the beginning of the buffer */
@@ -556,7 +555,7 @@ int receive_command(int socket, char *buffer) {
 			if(stop != -1) {
 				more_elements = 1;
 #ifdef DEBUG_RECEPTION
-				PRINT_VERBOSE("\tMore than one full element in the buffer.\n");
+				PRINT_VERBOSE("\tMore than one full element in the buffer.\n")
 #endif
 			}
 		}
@@ -568,11 +567,11 @@ void determine_adress() {
 	int probe_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if(probe_socket < 0) {
-		PRINT_ERROR("Could not create socket!\n");
+		PRINT_ERROR("Could not create socket!\n")
 		exit(-1);
 	}
 
-	PRINT_VERBOSE("Using network interface '%s'\n", interface_string);
+	PRINT_VERBOSE("Using network interface '%s'\n", interface_string)
 
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, interface_string, IFNAMSIZ-1);
@@ -583,8 +582,8 @@ void determine_adress() {
 	ioctl(probe_socket, SIOCGIFBRDADDR, &ifr_brd);
 	close(probe_socket);
 
-	PRINT_VERBOSE("Listen adress is %s\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-	PRINT_VERBOSE("Broadcast adress is %s\n", inet_ntoa(((struct sockaddr_in *)&ifr_brd.ifr_broadaddr)->sin_addr));
+	PRINT_VERBOSE("Listen adress is %s\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr))
+	PRINT_VERBOSE("Broadcast adress is %s\n", inet_ntoa(((struct sockaddr_in *)&ifr_brd.ifr_broadaddr)->sin_addr))
 
 	/* set listen adress */
 	saddr.sin_family = AF_INET;

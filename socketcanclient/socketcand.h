@@ -25,7 +25,9 @@
 #define VERSION_STRING "SNAPSHOT"
 #endif
 
-#undef DEBUG_RECEPTION
+#define DEBUG
+#define DEBUG_RECEPTION
+// #undef DEBUG_RECEPTION
 
 void state_bcm();
 void state_raw();
